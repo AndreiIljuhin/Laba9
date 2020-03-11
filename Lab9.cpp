@@ -1,7 +1,8 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <chrono>
 
 using namespace std;
 
@@ -435,8 +436,11 @@ void test_generation(char* filename, int quantity) {
 	ofstream file(filename);
 	char* expression = new char[50];
 	for (int j = 0; j < quantity; j++) {
+		char* c;
 		file.write("Вариант ", strlen("Вариант "));
-		file.write(int_to_char(j + 1), strlen(int_to_char(j + 1)));
+		c = int_to_char(j + 1);
+		file.write(c, strlen(c));
+		delete[] c;
 		file.write("\nРешите выражения:\n1) ", strlen("\nРешите выражения:\n1) "));
 		cout_operands = q_operands = 5 + rand() % 4;
 		q_operations = q_operands - 1;
@@ -446,7 +450,9 @@ void test_generation(char* filename, int quantity) {
 		for (expression_ptr; q_operands or q_operations; 1) {//обратная польская
 			if (rand() % 2) {
 				if (q_operands) {
-					strcat(expression_ptr, int_to_char(rand() % 15 + 1));
+					c = int_to_char(rand() % 15 + 1);
+					strcat(expression_ptr, c);
+					delete[] c;
 					while (*expression_ptr != '\0')
 						expression_ptr++;
 					*expression_ptr = ' ';
@@ -487,7 +493,7 @@ void test_generation(char* filename, int quantity) {
 						for (int i = 49; i > 0; i--)
 							expression_ptr[i] = expression_ptr[i - 1];
 						*expression_ptr = ' ';
-					char* c = int_to_char(rand() % 15 + 1);
+					c = int_to_char(rand() % 15 + 1);
 					for (int j = strlen(c); j > 0; j--) {
 						for (int i = 49; i > 0; i--)
 							expression_ptr[i] = expression_ptr[i - 1];
@@ -702,70 +708,109 @@ int main()
 {
 	setlocale(LC_ALL, "ru");
 	srand(time(0));
+	chrono::time_point<chrono::high_resolution_clock> start, end;
 	char* expression = new char[100];
 	int expression_number, choise;
+	double elapsed_seconds;
 	ifstream file;
 	cout << "ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ\n";
 	cout << "(1)Вводите только положительные числа\n";
 	cout << "(2)Вводите только однозначные числа\n";
-	cout << "(3)Если нужно ввести отрицательное число или число, больше 9, то обозначте его переменной, после проверки правильности\n выражения, вы сможете указать значение этой переменной\n";
+	cout << "(3)Если нужно ввести отрицательное число или число, больше 9, то обозначте его переменной, после проверки правильности\n"
+		<< "выражения, вы сможете указать значение этой переменной\n";
 	cout << "(4)Обочначать переменные можно только строчными английскими буквами\n";
 	cout << "(5)Продолжая использовать программу, вы принимаете условия пользовательского соглашения\n";
 	cout << "---------------------------------------------------------------------\n";
 	system("Pause");
-
-	while (1) {
+	bool exit = 0;
+	while (!exit) {
 		expression_number = 0;
+		system("cls");
 		cout << "1 - ввод выражения с файла\n";
 		cout << "2 - ввод с консоли\n";
 		cout << "3 - генерация проверочной работы на прямую и обратную польские нотации с ответами\n";
 		cout << "4 - Реализуйте стек. Заполните его случайными положительными и\n"
 			"отрицательными числами.Преобразуйте стек в два стека.Первый\n"
 			"должен содержать только положительные числа, второй – отрицательные.\n";
+		cout << "5 - выход из программы\n";
 		cin >> choise;
 		stream_cleaning();
-		cout << "Введите выражение:\n";
 		if (choise == 1) {
+			cout << "Введите выражение:\n";
 			system("file.txt");
 			file.open("file.txt");
 			file.getline(expression, 50, '\n');
 			file.close();
 		}
+
 		if (choise == 2){
+			cout << "Введите выражение:\n";
 			cin.getline(expression, 50, '\n');
 			stream_cleaning();
 		}
 
 		if (choise == 1 or choise == 2) {
-			if (check_reverse_polish_notation(expression)) {
+			start = chrono::high_resolution_clock::now();
+			bool b = check_reverse_polish_notation(expression);
+			end = chrono::high_resolution_clock::now();
+			if (b) {
 				cout << "Выражение записано в виде обратной польской нотации\n";
+				elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+				cout << "Время проверки обратной польской нотации: " << 0.0000000001 * elapsed_seconds << " секунды\n";
 				expression_number = 1;
 			}
-			else if (check_polish_notation(expression)) {
-				cout << "Выражение записано в виде прямой польской нотации\n";
-				expression_number = 2;
+			if (!b) {
+				start = chrono::high_resolution_clock::now();
+				b = check_polish_notation(expression);
+				end = chrono::high_resolution_clock::now();
+				if (b) {
+					cout << "Выражение записано в виде прямой польской нотации\n";
+					elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+					cout << "Время проверки польской нотации: " << 0.0000000001 * elapsed_seconds << " секунды\n";
+					expression_number = 2;
+				}
 			}
-			else if (check_simple_expression(expression)) {
-				cout << "Выражение записано в обычном виде\n";
-				expression_number = 3;
+			if (!b) {
+				start = chrono::high_resolution_clock::now();
+				b = check_simple_expression(expression);
+				end = chrono::high_resolution_clock::now();
+				if (b) {
+					cout << "Выражение записано в обычном виде\n";
+					elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+					cout << "Время проверки обычного выражения: " << 0.0000000001 * elapsed_seconds << " секунды\n";
+					expression_number = 3;
+				}
 			}
-			else
+			if (!b)
 				cout << "Неверное выражение\n";
 
 			if (expression_number) {
+
 				filling_variables(expression);//Ввод переменных
 				cout << "Решение выражения " << expression << ": ";
 
 				switch (expression_number) {
 				case 1:
+					start = chrono::high_resolution_clock::now();
 					cout << calculating_reverse_polish_notation(expression) << endl;
+					end = chrono::high_resolution_clock::now();
+					elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+					cout << "Время решения: " << 0.0000000001 * elapsed_seconds << " секунды\n";
 					break;
 				case 2:
+					start = chrono::high_resolution_clock::now();
 					cout << calculating_polish_notation(expression) << endl;
+					end = chrono::high_resolution_clock::now();
+					elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+					cout << "Время решения: " << 0.0000000001 * elapsed_seconds << " секунды\n";
 					break;
 				case 3:
+					start = chrono::high_resolution_clock::now();
 					char* expression_ptr = expression;
 					cout << normal_record_calculation(expression_ptr) << endl;
+					end = chrono::high_resolution_clock::now();
+					elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+                                        cout << "Время решения: " << 0.0000000001 * elapsed_seconds << " секунды\n";
 					break;
 				}
 			}
@@ -781,5 +826,12 @@ int main()
 		if (choise == 4) {
 			part4();
 		}
+
+		if (choise == 5) {
+			exit = 1;
+		}
+
+		if (!exit)
+			system("Pause");
 	}
 }
