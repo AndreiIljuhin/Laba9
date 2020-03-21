@@ -15,7 +15,7 @@ char* int_to_char(int i) {
 	char* str = new char[15];
 	str[0] = '\0';
 	while (i > 0) {
-		for (int i = 14; i > 0; i--)
+		for (int i = 14; i > 0; i--)//сдвиг вправо
 			str[i] = str[i - 1];
 		str[0] = (unsigned char)(48 + i % 10);
 		i = i / 10;
@@ -27,7 +27,7 @@ int insert_variable(char*& expression, int i, int value) {
 	char* c_value = int_to_char(value);
 	for (int i = 14; i > 0; i--)
 		c_value[i] = c_value[i - 1];
-	c_value[0] = '(';
+	c_value[0] = '(';//добавление скобок для разделения однозначных и многозначных чисел
 	for (int i = 0; i < 15; i++)
 		if (c_value[i] == '\0') {
 			c_value[i] = ')';
@@ -36,7 +36,7 @@ int insert_variable(char*& expression, int i, int value) {
 		}
 	int c_value_lenght = strlen(c_value);
 	char* c_value_ptr = c_value;
-	for (int j = i; j < i + c_value_lenght; j++) {
+	for (int j = i; j < i + c_value_lenght; j++) {//вставка значения на место переменной
 		if (j != i)
 			for (int k = 99; k > j; k--)
 				expression[k] = expression[k - 1];
@@ -49,7 +49,7 @@ int insert_variable(char*& expression, int i, int value) {
 
 void filling_variables(char*& expression) {
 	bool exit = 1;
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 100; i++) {//поиск переменных
 		if ((unsigned char)expression[i] > 96 and (unsigned char)expression[i] < 123)//обычные буквы англ. алфавита
 			exit = 0;
 		if (expression[i] == '\0')
@@ -60,8 +60,8 @@ void filling_variables(char*& expression) {
 	while (!exit) {
 		exit = 1;
 		cout << "Введите имя переменной и ее значение через пробел\n";
-		cin >> name;//Можно сделать проверку на дурака
-		if (cin >> value);
+		cin >> name;
+		if (cin >> value);//если нет пробела, ввод переменной, если есть, считывание пробела, потом ввод переменной
 		else {
 			cin.clear();
 			cin.get();
@@ -69,7 +69,7 @@ void filling_variables(char*& expression) {
 		}
 		stream_cleaning();
 
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 100; i++) {//поиск и вставка всех переменных с именем name
 			if (expression[i] == '\0')
 				break;
 
@@ -85,7 +85,7 @@ void filling_variables(char*& expression) {
 
 bool check_reverse_polish_notation(char* expression) {
 	int counter_operands = 0, counter_operations = 0;
-	unsigned char c;
+	unsigned char c;//перевод в беззнаковый символ для более простого сравнения с таблицей аски
 	for (int i = 0; i < 100; i++) {
 		c = expression[i];
 		if (c >= 48 and c <= 57 or c >= 97 and c <= 122)//операнды
@@ -96,7 +96,7 @@ bool check_reverse_polish_notation(char* expression) {
 			return 0;
 		else
 			break;
-		if (counter_operands <= counter_operations)
+		if (counter_operands <= counter_operations)//достаточно проверять каждую итерацию количество операндов и операций
 			return 0;
 	}
 	if (counter_operands != counter_operations + 1)
@@ -108,7 +108,7 @@ bool check_reverse_polish_notation(char* expression) {
 bool check_polish_notation(char* expression) {
 	int counter_operands = 0, counter_operations = 0;
 	int i = 0;
-	while (expression[i] != '\0')
+	while (expression[i] != '\0')//проверяю так же, как обратную польскую, но с конца
 		i++;
 	unsigned char c;
 	for (int j = i - 1; j >= 0; j--) {
@@ -142,16 +142,16 @@ bool service_check_simple_expression(char*& expression, bool first) {
 			return 0;
 
 		if (c == '(') {
-			if (!service_check_simple_expression(++expression, 0))
+			if (!service_check_simple_expression(++expression, 0))//открытие скобок означает рекурсивный вызов функции
 				return 0;
-			counter_operands++;;
-			c = *expression;
+			counter_operands++;//то, что в скобках, тоже операнд
+			c = *expression;//рекурсия сама перейдет к нужному символу
 		}
 		else {
 			expression++;
-			c = *expression;
+			c = *expression;//переход к следующему символу
 		}
-		if (counter_operands >= 2)
+		if (counter_operands >= 2)//проверка количеста операндов и операций
 			if (counter_operations != 1)
 				return 0;
 			else {
@@ -161,13 +161,13 @@ bool service_check_simple_expression(char*& expression, bool first) {
 		if (counter_operations >= 2)
 			return 0;
 	}
-	if (!first)
+	if (!first)//если будет лишний символ ')', он не удалится
 		if (c != '\0')
 			expression++;
 	return b;
 }
 
-bool check_simple_expression(char* expression) {
+bool check_simple_expression(char* expression) {//для того, чтобы не создавать в main указатель на выражение, используется эта функция
 	if (service_check_simple_expression(expression, 1) and *expression == '\0')
 		return 1;
 	else
@@ -180,7 +180,7 @@ struct Stack {
 	Stack* previous = nullptr;
 };
 
-int reverse_char_to_int(char*& str) {
+int char_to_int(char*& str) {//перевод из char(число слева направо) в int
 	int in = 0;
 	unsigned char c = *str;
 	while (c >= 48 and c <= 57) {
@@ -195,47 +195,47 @@ int reverse_char_to_int(char*& str) {
 int calculating_reverse_polish_notation(char* expression) {
 	Stack<int>* head = nullptr;
 	Stack<int>* new_s = nullptr;
-	int Summ = 0;
+	int summ = 0;
 	unsigned char c;
 	for (c = *expression; c != '\0'; c = *(++expression)) {
 		if (c >= 48 and c <= 57 or c == '(') {//операнды
-			new_s = new Stack<int>;
+			new_s = new Stack<int>;//создание нового объекта стека для операнда
 			new_s->previous = head;
 			head = new_s;
-			if (c != '(')
+			if (c != '(')//в скобках числа больше 9
 				head->info = c - 48;
 			else {
-				head->info = reverse_char_to_int(++expression);
+				head->info = char_to_int(++expression);
 			}
 		}
 		else {//операторы
-			int operand1 = head->info;
+			int operand1 = head->info;//достаем 2 последних операнда
 			new_s = head->previous;
-			delete head;
+			delete head;//соответственно, 1 удаляем
 			head = new_s;
 			int operand2 = head->info;
 			switch (c) {
 			case '*':
-				Summ = operand2 * operand1;
+				summ = operand2 * operand1;
 				break;
 			case '+':
-				Summ = operand2 + operand1;
+				summ = operand2 + operand1;
 				break;
 			case '-':
-				Summ = operand2 - operand1;
+				summ = operand2 - operand1;
 				break;
 			case '/':
-				Summ = operand2 / operand1;
+				summ = operand2 / operand1;
 				break;
 			}
-			head->info = Summ;
+			head->info = summ;//помещаем результат на место 2 операнда
 		}
 	}
 	delete head;
-	return Summ;
+	return summ;
 }
 
-int char_to_int(char*& str, int& i) {
+int reverse_char_to_int(char*& str, int& i) {//перевод из char(число справа налево) в int
 	int in = 0, counter = 0;
 	unsigned char c = *str;
 	while (c >= 48 and c <= 57) {
@@ -250,13 +250,13 @@ int char_to_int(char*& str, int& i) {
 
 int calculating_polish_notation(char* expression) {
 	int i = strlen(expression);
-	while (*expression != '\0')
+	while (*expression != '\0')//переход в конец выражения
 		expression++;
 	Stack<int>* head = nullptr;
 	Stack<int>* new_s = nullptr;
-	int Summ = 0;
+	int summ = 0;
 	unsigned char c;
-	for (c = *(--expression); i > 0; c = *(--expression)) {
+	for (c = *(--expression); i > 0; c = *(--expression)) {//вычисление справа налево
 		if (c >= 48 and c <= 57 or c == ')') {//операнды
 			new_s = new Stack<int>;
 			new_s->previous = head;
@@ -264,7 +264,7 @@ int calculating_polish_notation(char* expression) {
 			if (c != ')')
 				head->info = c - 48;
 			else {
-				head->info = char_to_int(--expression, --i);
+				head->info = reverse_char_to_int(--expression, --i);
 			}
 		}
 		else {//операторы
@@ -275,34 +275,34 @@ int calculating_polish_notation(char* expression) {
 			int operand2 = head->info;
 			switch (c) {
 			case '*':
-				Summ = operand1 * operand2;
+				summ = operand1 * operand2;
 				break;
 			case '+':
-				Summ = operand1 + operand2;
+				summ = operand1 + operand2;
 				break;
 			case '-':
-				Summ = operand1 - operand2;
+				summ = operand1 - operand2;
 				break;
 			case '/':
-				Summ = operand1 / operand2;
+				summ = operand1 / operand2;
 				break;
 			}
-			head->info = Summ;
+			head->info = summ;
 		}
 		i--;
 	}
 	delete head;
-	return Summ;
+	return summ;
 }
 
 int normal_record_calculation(char*& expression) {
-	Stack<int>* operands = nullptr;
+	Stack<int>* operands = nullptr;//стеки для операндов и неприоритетных операций
 	Stack<char>* operators = nullptr;
 	Stack<int>* newi;
 	Stack<char>* newc;
 	unsigned char c = *expression;
 	while (!(c == ')' or c == '\0')) {
-		if (c == '*' or c == '/' or c == '-' or c == '+') {
+		if (c == '*' or c == '/' or c == '-' or c == '+') {//занесение операции в стек
 			newc = new Stack<char>;
 			newc->previous = operators;
 			operators = newc;
@@ -310,21 +310,21 @@ int normal_record_calculation(char*& expression) {
 			expression++;
 			c = *expression;
 		}
-		if (c == '(') {
+		if (c == '(') {//занесение операнда в стек
 			newi = new Stack<int>;
 			newi->previous = operands;
 			operands = newi;
-			operands->info = normal_record_calculation(++expression);
+			operands->info = normal_record_calculation(++expression);//возвращение значения выражения в скобках
 			c = *expression;
 		}
-		else if (c >= 48 and c <= 57) {
+		else if (c >= 48 and c <= 57) {//занесение операнда в стек
 			newi = new Stack<int>;
 			newi->previous = operands;
 			operands = newi;
-			operands->info = reverse_char_to_int(expression);
+			operands->info = char_to_int(expression);
 			c = *expression;
 		}
-		if (operators != nullptr and (operators->info == '*' or operators->info == '/')) {
+		if (operators != nullptr and (operators->info == '*' or operators->info == '/')) {//сначала подсчет приоритетных операций
 			if (operators->info == '*')
 				operands->previous->info *= operands->info;
 			if (operators->info == '/')
@@ -340,7 +340,7 @@ int normal_record_calculation(char*& expression) {
 
 	if (c == ')')
 		expression++;
-	while (operands->previous != nullptr) {
+	while (operands->previous != nullptr) {//подсчет неприоритетных операций
 		switch (operators->info) {
 		case '+':
 			operands->previous->info += operands->info;
@@ -356,40 +356,40 @@ int normal_record_calculation(char*& expression) {
 		delete operators;
 		operators = newc;
 	}
-	int Summ = operands->info;
+	int summ = operands->info;
 	delete operands;
-	return Summ;
+	return summ;
 }
 
-//int normal_record_calculation(char*& expression) {
+//int normal_record_calculation(char*& expression) {//вычисление обычного выражения без стека и приоритета операций
 //	char operat = 0;
-//	int Summ = 0;
+//	int summ = 0;
 //	unsigned char c = *expression;
 //	while (!(c == ')' or c == '\0')) {
 //		if (c == '(') {
 //			switch (operat) {
 //			case '*':
-//				Summ *= normal_record_calculation(++expression);
+//				summ *= normal_record_calculation(++expression);
 //				operat = 1;
 //				break;
 //			case '/':
-//				Summ /= normal_record_calculation(++expression);
+//				summ /= normal_record_calculation(++expression);
 //				operat = 1;
 //				break;
 //			case '-':
-//				Summ -= normal_record_calculation(++expression);
+//				summ -= normal_record_calculation(++expression);
 //				operat = 1;
 //				break;
 //			case '+':
-//				Summ += normal_record_calculation(++expression);
+//				summ += normal_record_calculation(++expression);
 //				operat = 1;
 //				break;
 //			case 0:
-//				Summ = normal_record_calculation(++expression);
+//				summ = normal_record_calculation(++expression);
 //				operat = 1;
 //				break;
 //			case 1:
-//				Summ *= normal_record_calculation(++expression);
+//				summ *= normal_record_calculation(++expression);
 //				break;
 //			}
 //			c = *expression;
@@ -400,22 +400,22 @@ int normal_record_calculation(char*& expression) {
 //		if (c >= 48 and c <= 57) {
 //			switch (operat) {
 //			case '*':
-//				Summ *= reverse_char_to_int(expression);
+//				summ *= reverse_char_to_int(expression);
 //				break;
 //			case '/':
-//				Summ /= reverse_char_to_int(expression);
+//				summ /= reverse_char_to_int(expression);
 //				break;
 //			case '-':
-//				Summ -= reverse_char_to_int(expression);
+//				summ -= reverse_char_to_int(expression);
 //				break;
 //			case '+':
-//				Summ += reverse_char_to_int(expression);
+//				summ += reverse_char_to_int(expression);
 //				break;
 //			case 0:
-//				Summ = reverse_char_to_int(expression);
+//				summ = reverse_char_to_int(expression);
 //				break;
 //			case '1':
-//				Summ *= reverse_char_to_int(expression);
+//				summ *= reverse_char_to_int(expression);
 //				break;
 //			}
 //			operat = 1;
@@ -428,7 +428,7 @@ int normal_record_calculation(char*& expression) {
 //	}
 //	if (c == ')')
 //		expression++;
-//	return Summ;
+//	return summ;
 //}
 
 void test_generation(char* filename, int quantity) {
@@ -442,15 +442,15 @@ void test_generation(char* filename, int quantity) {
 		file.write(c, strlen(c));
 		delete[] c;
 		file.write("\nРешите выражения:\n1) ", strlen("\nРешите выражения:\n1) "));
-		cout_operands = q_operands = 5 + rand() % 4;
+		cout_operands = q_operands = 5 + rand() % 4;//рандомное количество операндов в выражении 1, чем больше здесь, тем меньше будет в выражении 2
 		q_operations = q_operands - 1;
 		for (int i = 0; i < 50; i++)
 			expression[i] = '\0';
 		char* expression_ptr = expression;
 		for (expression_ptr; q_operands or q_operations; 1) {//обратная польская
-			if (rand() % 2) {
-				if (q_operands) {
-					c = int_to_char(rand() % 15 + 1);
+			if (rand() % 2) {//вероятность добавить операнд - 50%, операцию - 50%, если выполнятся проверки
+				if (q_operands) {//если еще остались свободные операнды
+					c = int_to_char(rand() % 15 + 1);//выбор значения операнда
 					strcat(expression_ptr, c);
 					delete[] c;
 					while (*expression_ptr != '\0')
@@ -461,8 +461,9 @@ void test_generation(char* filename, int quantity) {
 				}
 			}
 			else {
-				if (q_operands < q_operations) {
-					*expression_ptr = rand() % 3 + 1;
+				if (q_operands < q_operations) {		//сели количество операндов меньше количества операций
+					*expression_ptr = rand() % 3 + 1;	//соответственно, первые два символа выражения будут операнды (считая операнды больше 9 в скобках за один),
+														//а последний будет операцией
 					switch (*expression_ptr) {
 					case 1:
 						*expression_ptr = '+';
@@ -479,10 +480,10 @@ void test_generation(char* filename, int quantity) {
 				}
 			}
 		}
-		file.write(expression, strlen(expression));
+		file.write(expression, strlen(expression));//запись строки в файл
 
 		file.write("\n2) ", strlen("\n2) "));
-		q_operands = 5 + 8 - cout_operands;
+		q_operands = 5 + 8 - cout_operands;//количество операндов в соответствии с 1 выражением
 		q_operations = q_operands - 1;
 		for (int i = 0; i < 50; i++)
 			expression[i] = '\0';
@@ -490,14 +491,14 @@ void test_generation(char* filename, int quantity) {
 		for (expression_ptr; q_operands or q_operations; 1) {//обратная польская
 			if (rand() % 2) {
 				if (q_operands) {
-						for (int i = 49; i > 0; i--)
+						for (int i = 49; i > 0; i--)//сдвиг выражения вправо
 							expression_ptr[i] = expression_ptr[i - 1];
 						*expression_ptr = ' ';
 					c = int_to_char(rand() % 15 + 1);
-					for (int j = strlen(c); j > 0; j--) {
+					for (int j = strlen(c); j > 0; j--) {//сдвиг вправо на символьную длину числа и его запись
 						for (int i = 49; i > 0; i--)
 							expression_ptr[i] = expression_ptr[i - 1];
-						*expression = c[j - 1];
+						*expression = c[j - 1];//соответственно, запись числа с конца
 					}
 					q_operands--;
 				}
@@ -506,7 +507,7 @@ void test_generation(char* filename, int quantity) {
 				if (q_operands < q_operations) {
 					for (int i = 49; i > 0; i--)
 						expression_ptr[i] = expression_ptr[i - 1];
-					*expression_ptr = rand() % 3 + 1;
+					*expression_ptr = rand() % 3 + 1;//выбор операции
 					switch (*expression_ptr) {
 					case 1:
 						*expression_ptr = '+';
@@ -529,14 +530,14 @@ void test_generation(char* filename, int quantity) {
 	delete[] expression;
 }
 
-void stack_output(Stack<int>* head, ofstream* file) {
+void stack_output(Stack<int>* head, ofstream* file) {//вывод в файл
 	while (head != nullptr) {
 		*file << head->info << " ";
 		head = head->previous;
 	}
 }
 
-void stack_output(Stack<int>* head) {
+void stack_output(Stack<int>* head) {//вывод в консоль
 	while (head != nullptr) {
 		cout << head->info << " ";
 		head = head->previous;
@@ -560,11 +561,11 @@ void test_solution(char* Testfilename, char* filename) {
 
 	while (test.getline(line, 100, '\n')) {
 		if (*line == 'В')
-			solution << line << endl;
+			solution << line << endl;//перенос строки с номером варианта
 		if (*line == '1' or *line == '2') {
 			line_ptr = line;
-			line_ptr += 3;
-			for (int i = 0; i < strlen(line_ptr); i++) {
+			line_ptr += 3;//сдвиг указателя к началу выражения
+			for (int i = 0; i < strlen(line_ptr); i++) {//перевод записи выражения в приемлемую форму для вычисления
 				if (line_ptr[i] == ' ')
 					line_ptr[i] = ')';
 				if ((unsigned char)line_ptr[i] >= 48 and (unsigned char)line_ptr[i] <= 57) {
@@ -577,7 +578,7 @@ void test_solution(char* Testfilename, char* filename) {
 					i--;
 				}
 			}
-			if (*line == '2') {
+			if (*line == '2') {//перевод из польской в обратную польскую
 				char* new_line_ptr = new char[strlen(line_ptr)];
 				for (int i = strlen(line_ptr) - 1; i >= 0; i--) {
 					if (line_ptr[i] == '+' or line_ptr[i] == '*' or line_ptr[i] == '-' or line_ptr[i] == '/') {
@@ -603,9 +604,9 @@ void test_solution(char* Testfilename, char* filename) {
 			}
 			Stack<int>* head = nullptr;
 			Stack<int>* new_s = nullptr;
-			int Summ = 0;
+			int summ = 0;
 			unsigned char c;
-			for (c = *line_ptr; c != '\0'; c = *(++line_ptr)) {
+			for (c = *line_ptr; c != '\0'; c = *(++line_ptr)) {//решение выражение и вывод действий в файл
 				if (c >= 48 and c <= 57 or c == '(') {//операнды
 					new_s = new Stack<int>;
 					new_s->previous = head;
@@ -613,7 +614,7 @@ void test_solution(char* Testfilename, char* filename) {
 					if (c != '(')
 						head->info = c - 48;
 					else {
-						head->info = reverse_char_to_int(++line_ptr);
+						head->info = char_to_int(++line_ptr);
 					}
 					solution << "Заносим в стек число " << head->info << endl;
 					solution << "Стек: ";
@@ -629,30 +630,30 @@ void test_solution(char* Testfilename, char* filename) {
 					solution << "Достаем из стека числа " << operand2 << " и " << operand1 << endl;
 					switch (c) {
 					case '*':
-						Summ = operand2 * operand1;
-						solution << "Перемножая получаем " << Summ << " заносим это число в стек" << endl;
+						summ = operand2 * operand1;
+						solution << "Перемножая получаем " << summ << " заносим это число в стек" << endl;
 						break;
 					case '+':
-						Summ = operand2 + operand1;
-						solution << "Складывая получаем " << Summ << " заносим это число в стек" << endl;
+						summ = operand2 + operand1;
+						solution << "Складывая получаем " << summ << " заносим это число в стек" << endl;
 						break;
 					case '-':
-						Summ = operand2 - operand1;
-						solution << "Вычитая получаем " << Summ << " заносим это число в стек" << endl;
+						summ = operand2 - operand1;
+						solution << "Вычитая получаем " << summ << " заносим это число в стек" << endl;
 						break;
 					case '/':
-						Summ = operand2 / operand1;
-						solution << "В результате частного " << Summ << " заносим это число в стек" << endl;
+						summ = operand2 / operand1;
+						solution << "В результате частного " << summ << " заносим это число в стек" << endl;
 						break;
 					}
-					head->info = Summ;
+					head->info = summ;
 					solution << "Стек: ";
 					stack_output(head, &solution);
 					solution << endl;
 				}
 			}
 			delete head;
-			solution << "Ответ: " << Summ << endl << endl;
+			solution << "Ответ: " << summ << endl << endl;
 		}
 	}
 
@@ -664,7 +665,7 @@ void test_solution(char* Testfilename, char* filename) {
 void part4() {
 	Stack<int>* head = nullptr;
 	Stack<int>* news;
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 10; i++) {//создание стека длиной 10
 		news = new Stack<int>;
 		news->previous = head;
 		head = news;
@@ -676,7 +677,7 @@ void part4() {
 
 	Stack<int>* headplus = nullptr;
 	Stack<int>* headminus = nullptr;
-	while (head != nullptr) {
+	while (head != nullptr) {//разделение на два
 		if (head->info > 0) {
 			news = new Stack<int>;
 			news->previous = headplus;
@@ -707,31 +708,34 @@ void part4() {
 int main()
 {
 	setlocale(LC_ALL, "ru");
+	cout << "ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ\n";
+	cout << "(1)Вводите только положительные числа\n";
+	cout << "(2)Вводите только однозначные числа\n";
+	cout << "(3)Если нужно ввести число больше 9, то обозначте его\n переменной, после проверки правильности"
+		<< "выражения,\n вы сможете указать значение этой переменной\n";
+	cout << "(4)Обочначать переменные можно только строчными английскими буквами\n";
+	cout << "(5)Продолжая использовать программу, вы принимаете условия\n пользовательского соглашения\n";
+	cout << "---------------------------------------------------------------------\n";
+	system("Pause");
 	srand(time(0));
 	chrono::time_point<chrono::high_resolution_clock> start, end;
 	char* expression = new char[100];
 	int expression_number, choise;
 	double elapsed_seconds;
 	ifstream file;
-	cout << "ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ\n";
-	cout << "(1)Вводите только положительные числа\n";
-	cout << "(2)Вводите только однозначные числа\n";
-	cout << "(3)Если нужно ввести отрицательное число или число, больше 9, то обозначте его переменной, после проверки правильности\n"
-		<< "выражения, вы сможете указать значение этой переменной\n";
-	cout << "(4)Обочначать переменные можно только строчными английскими буквами\n";
-	cout << "(5)Продолжая использовать программу, вы принимаете условия пользовательского соглашения\n";
-	cout << "---------------------------------------------------------------------\n";
-	system("Pause");
+	ofstream file2("file.txt", ios_base::app);
+	file2.close();
 	bool exit = 0;
+
 	while (!exit) {
 		expression_number = 0;
 		system("cls");
 		cout << "1 - ввод выражения с файла\n";
 		cout << "2 - ввод с консоли\n";
-		cout << "3 - генерация проверочной работы на прямую и обратную польские нотации с ответами\n";
+		cout << "3 - генерация проверочной работы на прямую и обратную польские нотации с\n ответами\n";
 		cout << "4 - Реализуйте стек. Заполните его случайными положительными и\n"
-			"отрицательными числами.Преобразуйте стек в два стека.Первый\n"
-			"должен содержать только положительные числа, второй – отрицательные.\n";
+			" отрицательными числами.Преобразуйте стек в два стека.Первый\n"
+			" должен содержать только положительные числа, второй – отрицательные.\n";
 		cout << "5 - выход из программы\n";
 		cin >> choise;
 		stream_cleaning();
@@ -810,7 +814,7 @@ int main()
 					cout << normal_record_calculation(expression_ptr) << endl;
 					end = chrono::high_resolution_clock::now();
 					elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-                                        cout << "Время решения: " << 0.0000000001 * elapsed_seconds << " секунды\n";
+					cout << "Время решения: " << 0.0000000001 * elapsed_seconds << " секунды\n";
 					break;
 				}
 			}
