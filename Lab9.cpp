@@ -491,9 +491,9 @@ void test_generation(char* filename, int quantity) {
 		for (expression_ptr; q_operands or q_operations; 1) {//обратная польская
 			if (rand() % 2) {
 				if (q_operands) {
-						for (int i = 49; i > 0; i--)//сдвиг выражения вправо
-							expression_ptr[i] = expression_ptr[i - 1];
-						*expression_ptr = ' ';
+					for (int i = 49; i > 0; i--)//сдвиг выражения вправо
+						expression_ptr[i] = expression_ptr[i - 1];
+					*expression_ptr = ' ';
 					c = int_to_char(rand() % 15 + 1);
 					for (int j = strlen(c); j > 0; j--) {//сдвиг вправо на символьную длину числа и его запись
 						for (int i = 49; i > 0; i--)
@@ -684,7 +684,7 @@ void part4() {
 			headplus = news;
 			headplus->info = head->info;
 		}
-		else if (head->info != 0){
+		else if (head->info != 0) {
 			news = new Stack<int>;
 			news->previous = headminus;
 			headminus = news;
@@ -720,7 +720,7 @@ int main()
 	srand(time(0));
 	chrono::time_point<chrono::high_resolution_clock> start, end;
 	char* expression = new char[100];
-	int expression_number, choise;
+	int expression_number, choice;
 	double elapsed_seconds;
 	ifstream file;
 	ofstream file2("file.txt", ios_base::app);
@@ -737,9 +737,9 @@ int main()
 			" отрицательными числами.Преобразуйте стек в два стека.Первый\n"
 			" должен содержать только положительные числа, второй – отрицательные.\n";
 		cout << "5 - выход из программы\n";
-		cin >> choise;
+		cin >> choice;
 		stream_cleaning();
-		if (choise == 1) {
+		if (choice == 1) {
 			cout << "Введите выражение:\n";
 			system("file.txt");
 			file.open("file.txt");
@@ -747,13 +747,13 @@ int main()
 			file.close();
 		}
 
-		if (choise == 2){
+		if (choice == 2) {
 			cout << "Введите выражение:\n";
 			cin.getline(expression, 50, '\n');
 			stream_cleaning();
 		}
 
-		if (choise == 1 or choise == 2) {
+		if (choice == 1 or choice == 2) {
 			start = chrono::high_resolution_clock::now();
 			bool b = check_reverse_polish_notation(expression);
 			end = chrono::high_resolution_clock::now();
@@ -820,18 +820,18 @@ int main()
 			}
 		}
 
-		if (choise == 3) {
+		if (choice == 3) {
 			test_generation((char*)"control.txt", 10);
 			system("control.txt");
-            test_solution((char*)"control.txt", (char*)"control_solution.txt");
+			test_solution((char*)"control.txt", (char*)"control_solution.txt");
 			system("control_solution.txt");
 		}
 
-		if (choise == 4) {
+		if (choice == 4) {
 			part4();
 		}
 
-		if (choise == 5) {
+		if (choice == 5) {
 			exit = 1;
 		}
 
