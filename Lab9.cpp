@@ -760,7 +760,7 @@ int main()
 			if (b) {
 				cout << "Выражение записано в виде обратной польской нотации\n";
 				elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-				cout << "Время проверки обратной польской нотации: " << 0.0000000001 * elapsed_seconds << " секунды\n";
+				cout << "Время проверки обратной польской нотации: " << 0.000000001 * elapsed_seconds << " секунды\n";
 				expression_number = 1;
 			}
 			if (!b) {
@@ -770,7 +770,7 @@ int main()
 				if (b) {
 					cout << "Выражение записано в виде прямой польской нотации\n";
 					elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-					cout << "Время проверки польской нотации: " << 0.0000000001 * elapsed_seconds << " секунды\n";
+					cout << "Время проверки польской нотации: " << 0.000000001 * elapsed_seconds << " секунды\n";
 					expression_number = 2;
 				}
 			}
@@ -781,7 +781,7 @@ int main()
 				if (b) {
 					cout << "Выражение записано в обычном виде\n";
 					elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-					cout << "Время проверки обычного выражения: " << 0.0000000001 * elapsed_seconds << " секунды\n";
+					cout << "Время проверки обычного выражения: " << 0.000000001 * elapsed_seconds << " секунды\n";
 					expression_number = 3;
 				}
 			}
@@ -799,14 +799,14 @@ int main()
 					cout << calculating_reverse_polish_notation(expression) << endl;
 					end = chrono::high_resolution_clock::now();
 					elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-					cout << "Время решения: " << 0.0000000001 * elapsed_seconds << " секунды\n";
+					cout << "Время решения: " << 0.000000001 * elapsed_seconds << " секунды\n";
 					break;
 				case 2:
 					start = chrono::high_resolution_clock::now();
 					cout << calculating_polish_notation(expression) << endl;
 					end = chrono::high_resolution_clock::now();
 					elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-					cout << "Время решения: " << 0.0000000001 * elapsed_seconds << " секунды\n";
+					cout << "Время решения: " << 0.000000001 * elapsed_seconds << " секунды\n";
 					break;
 				case 3:
 					start = chrono::high_resolution_clock::now();
@@ -814,7 +814,7 @@ int main()
 					cout << normal_record_calculation(expression_ptr) << endl;
 					end = chrono::high_resolution_clock::now();
 					elapsed_seconds = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-					cout << "Время решения: " << 0.0000000001 * elapsed_seconds << " секунды\n";
+					cout << "Время решения: " << 0.000000001 * elapsed_seconds << " секунды\n";
 					break;
 				}
 			}
